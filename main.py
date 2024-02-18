@@ -42,8 +42,9 @@ def main():
         raffles_stats = driver.find_element(
             By.CSS_SELECTOR, '.raffle-list-stat h1').text
         for raffle in raffles:
-            raffle_link = raffle.find('a')['href']
-            raffles_links.append(url + raffle_link)
+            if not raffle.has_attr('class') or 'raffle-entered' not in raffle['class']:
+                raffle_link = raffle.find('a')['href']
+                raffles_links.append(url + raffle_link)
 
         print('Open Raffles Entered:', raffles_stats)
 
