@@ -1,21 +1,27 @@
 from seleniumbase import Driver
 import pickle
 
-driver = Driver(uc=True)
 
-driver.get('https://scrap.tf')
+def main():
+    driver = Driver(uc=True)
 
-cookies = pickle.load(open('cookies.pkl', 'rb'))
-for cookie in cookies:
-    cookie['domain'] == 'scrap.tf'
+    driver.get('https://scrap.tf')
 
-    try:
-        driver.add_cookie(cookie)
-    except Exception as e:
-        print(e)
+    cookies = pickle.load(open('cookies.pkl', 'rb'))
+    for cookie in cookies:
+        cookie['domain'] == 'scrap.tf'
 
-driver.get('https://scrap.tf/raffles')
+        try:
+            driver.add_cookie(cookie)
+        except Exception as e:
+            print(e)
 
-driver.sleep(900)
+    driver.get('https://scrap.tf/raffles')
 
-driver.quit()
+    driver.sleep(900)
+
+    driver.quit()
+
+
+if __name__ == '__main__':
+    main()
