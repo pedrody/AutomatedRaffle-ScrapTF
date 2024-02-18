@@ -22,12 +22,13 @@ def main():
         try:
             driver.add_cookie(cookie)
         except Exception as e:
-            print(e)
+            print(f'[!] Error when injecting cookies: {e}')
 
     driver.get(url_raffles)
 
     raffles_links = []
 
+    print('[+] Collecting all currently active raffles...\n')
     while True:
         scroll_to_bottom(driver)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -46,7 +47,33 @@ def main():
                 raffle_link = raffle.find('a')['href']
                 raffles_links.append(url + raffle_link)
 
-        print('Open Raffles Entered:', raffles_stats)
+        print(f'[+] Open Raffles Entered: {raffles_stats}\n')
+
+        for link in raffles_links:
+            driver.get(link)
+            raffle_name = driver.find_element(
+                By.CSS_SELECTOR, 'h3.subtitle').text
+
+            print('[>] Acessing the raffle:', raffle_name)
+            print(f'[>] Link: {link}\n')
+
+            print('[*] Trying to enter the raffle...\n')
+            try:
+                raffle_enter_button = driver.find_element(
+                    By.XPATH, "(//button[contains(text(),'Enter Raffle')])[2]")
+
+                driver.execute_script(
+                    "arguments[0].click();", raffle_enter_button)
+                print('[+] Successfully entered the raffle!')
+            except Exception as e:
+                print(f'[-] Failed to enter the raffle: {e}')
+
+            print('[>] Going to next...\n')
+            driver.sleep(3)
+
+        driver.get(url_raffles)
+        print('[+] Successfully entered all raffles!')
+        print(f'[+] Open Raffles Entered: {raffles_stats}\n')
 
     driver.sleep(9999)
     driver.quit()
