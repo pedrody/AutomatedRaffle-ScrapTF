@@ -4,6 +4,15 @@ from selenium.webdriver.common.by import By
 import pickle
 
 
+class Color:
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    RESET = '\033[m'
+    BOLD = '\033[1m'
+
+
 def logo():
     logo = """
 @@@@@@@   @@@@@@@@  @@@@@@@   @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@  
@@ -20,7 +29,7 @@ def logo():
                     github.com/pedrody
 
 """
-    return logo
+    return Color.BOLD + logo + Color.RESET
 
 
 def scroll_to_bottom(driver):
@@ -41,13 +50,15 @@ def main():
         try:
             driver.add_cookie(cookie)
         except Exception as e:
-            print(f'[!] Error when injecting cookies: {e}')
+            print(f'{Color.RED}[!] Error when injecting cookies: '
+                  f'{e}{Color.RESET}')
 
     driver.get(url_raffles)
 
     raffles_links = []
 
-    print('[+] Collecting all currently active raffles...\n')
+    print(
+        f'{Color.GREEN}[+] Collecting all currently active raffles...\n{Color.RESET}')
     while True:
         scroll_to_bottom(driver)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -66,35 +77,41 @@ def main():
                 raffle_link = raffle.find('a')['href']
                 raffles_links.append(url + raffle_link)
 
-        print(f'[+] Open Raffles Entered: {raffles_stats}\n')
+        print(
+            f'{Color.GREEN}[+] Open Raffles Entered: {raffles_stats}\n{Color.RESET}')
 
         for link in raffles_links:
             driver.get(link)
             raffle_name = driver.find_element(
                 By.CSS_SELECTOR, 'h3.subtitle').text
 
-            print('[>] Acessing the raffle:', raffle_name)
-            print(f'[>] Link: {link}\n')
+            print(f'{Color.YELLOW}[>] Acessing the raffle:{Color.RESET} '
+                  f'{raffle_name}')
+            print(f'{Color.YELLOW}[>] Link:{Color.RESET} {link}')
 
-            print('[*] Trying to enter the raffle...\n')
             try:
                 raffle_enter_button = driver.find_element(
                     By.XPATH, "(//button[contains(text(),'Enter Raffle')])[2]")
 
                 driver.execute_script(
                     "arguments[0].click();", raffle_enter_button)
-                print('[+] Successfully entered the raffle!')
+                print(
+                    f'{Color.GREEN}[+] Successfully entered the raffle!{Color.RESET}')
             except Exception as e:
-                print(f'[-] Failed to enter the raffle: {e}')
+                print(
+                    f'{Color.RED}[-] Failed to enter the raffle: {e}{Color.RESET}')
 
-            print('[>] Going to next...\n')
-            driver.sleep(3)
+            print(f'{Color.YELLOW}[>] Going to next...\n{Color.RESET}')
+            print('-\n')
+            driver.sleep(5)
 
         driver.get(url_raffles)
-        print('[+] Successfully entered all raffles!')
-        print(f'[+] Open Raffles Entered: {raffles_stats}\n')
+        raffles_stats = driver.find_element(
+            By.CSS_SELECTOR, '.raffle-list-stat h1').text
 
-    driver.sleep(9999)
+        print(f'{Color.GREEN}[+] Successfully entered all raffles!')
+        print(f'[+] Open Raffles Entered: {raffles_stats}\n{Color.RESET}')
+
     driver.quit()
 
 
