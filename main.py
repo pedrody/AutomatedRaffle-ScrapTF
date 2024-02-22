@@ -1,6 +1,7 @@
 from seleniumbase import Driver
-from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+from bs4 import BeautifulSoup
 import pickle
 
 
@@ -87,20 +88,45 @@ def enter_raffle(driver, link):
     driver.sleep(5)
 
 
+def inject_cookies(driver, cookies):
+    try:
+        for cookie in cookies:
+            cookie['domain'] == 'scrap.tf'
+            driver.add_cookie(cookie)
+        driver.refresh()
+        return check_cookie_injection(driver)
+
+    except Exception as e:
+        print(f'{Color.RED}[!] Error when injecting cookies: {e}{Color.RESET}')
+        return False
+
+
+def check_cookie_injection(driver):
+    try:
+        avatar_container = driver.find_element(
+            By.CSS_SELECTOR, '.avatar-container')
+        return True
+    except NoSuchElementException:
+        return False
+
+
 def main():
     url = 'https://scrap.tf'
     driver = Driver(uc=True)
     driver.get(url)
 
+    print(f'{Color.BLUE}[*] Injecting cookies for login...{Color.RESET}')
     cookies = pickle.load(open('cookies.pkl', 'rb'))
-    for cookie in cookies:
-        cookie['domain'] == 'scrap.tf'
 
-        try:
-            driver.add_cookie(cookie)
-        except Exception as e:
-            print(f'{Color.RED}[!] Error when injecting cookies: '
-                  f'{e}{Color.RESET}')
+    while True:
+        if inject_cookies(driver, cookies):
+            print(f'{Color.GREEN}[+] Successfully logged in!\n{Color.RESET}')
+            break
+        else:
+            print(
+                f'{Color.RED}[-] Login unsuccessful, retrying...{Color.RESET}')
+            driver.sleep(10)
+            driver.refresh()
 
     print(
         f'{Color.GREEN}[+] Collecting all currently active raffles...\n{Color.RESET}')
