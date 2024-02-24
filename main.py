@@ -8,10 +8,7 @@ import pickle
 class Color:
     GREEN = '\033[92m'
     RED = '\033[91m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
     RESET = '\033[m'
-    BOLD = '\033[1m'
 
 
 def logo():
@@ -30,7 +27,7 @@ def logo():
                     github.com/pedrody
 
 """
-    return Color.BOLD + logo + Color.RESET
+    return logo
 
 
 def scroll_to_bottom(driver):
@@ -79,11 +76,10 @@ def enter_raffle(driver, link):
         print(
             f'{Color.RED}[-] Failed to enter the raffle: {e}{Color.RESET}')
 
-    print(f'    {Color.YELLOW}> Raffle:{Color.RESET} '
-          f'{raffle_name}')
-    print(f'    {Color.YELLOW}> Link:{Color.RESET} {link}')
+    print(f'> Raffle: {raffle_name}')
+    print(f'> Link: {link}')
 
-    print(f'    {Color.YELLOW}> Going to next...\n{Color.RESET}')
+    print(f'> Going to next...\n')
     print('-\n')
     driver.sleep(5)
 
@@ -97,7 +93,7 @@ def inject_cookies(driver, cookies):
         return check_cookie_injection(driver)
 
     except Exception as e:
-        print(f'{Color.RED}[!] Error when injecting cookies: {e}{Color.RESET}')
+        print(f'{Color.RED}[-] Error when injecting cookies: {e}{Color.RESET}')
         return False
 
 
@@ -115,42 +111,42 @@ def main():
     driver = Driver(uc=True)
     driver.get(url)
 
-    print(f'{Color.BLUE}[*] Injecting cookies for login...{Color.RESET}')
+    print(f'{Color.GREEN}[+] Injecting cookies for login...{Color.RESET}')
     cookies = pickle.load(open('cookies.pkl', 'rb'))
 
     while True:
         if inject_cookies(driver, cookies):
-            print(f'{Color.GREEN}[+] Successfully logged in!\n{Color.RESET}')
+            print('> Successfully logged in!\n')
+
             break
         else:
-            print(
-                f'{Color.RED}[-] Login unsuccessful, retrying...{Color.RESET}')
+            print('> Login unsuccessful, retrying...')
             driver.sleep(10)
             driver.refresh()
 
     print(
-        f'{Color.GREEN}[+] Collecting all currently active raffles...\n{Color.RESET}')
+        f'{Color.GREEN}[+] Collecting all currently active raffles...{Color.RESET}')
     raffles_links = collect_raffle_links(driver)
 
     while True:
         print(
-            f'{Color.GREEN}[+] Open Raffles Found: {len(raffles_links)}\n{Color.RESET}')
+            f'> Open Raffles Found: {len(raffles_links)}\n')
         for link in raffles_links:
             enter_raffle(driver, link)
 
-        print(f'{Color.BLUE}[*] Searching for new raffles...')
+        print(f'{Color.GREEN}[+] Searching for new raffles...{Color.RESET}')
         new_raffles_links = collect_raffle_links(driver)
 
         if new_raffles_links:
-            print(f'[!] New raffles were found!{Color.RESET}\n')
+            print('> New raffles were found!')
             raffles_links = new_raffles_links
             continue
         break
 
     raffles_stats = driver.find_element(
         By.CSS_SELECTOR, '.raffle-list-stat h1').text
-    print(f'{Color.GREEN}[+] Successfully entered all raffles!')
-    print(f'[+] Open Raffles Entered: {raffles_stats}\n{Color.RESET}')
+    print(f'{Color.GREEN}[+] Successfully entered all raffles!{Color.RESET}')
+    print(f'> Open Raffles Entered: {raffles_stats}\n')
 
     driver.quit()
 
