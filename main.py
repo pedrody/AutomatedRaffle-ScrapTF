@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 import pickle
+import argparse
 
 
 class Color:
@@ -170,7 +171,7 @@ def check_cookie_injection(driver):
         return False
 
 
-def main():
+def main(headless=False):
     """
     The main function automates the process of logging in, collecting and entering
     raffles on a website using Selenium WebDriver in Python.
@@ -178,7 +179,7 @@ def main():
 
     # Initialization and setup
     url = 'https://scrap.tf'
-    driver = Driver(uc=True)
+    driver = Driver(uc=True, headless=headless)
     driver.get(url)
 
     # Injecting cookies for login
@@ -228,5 +229,11 @@ def main():
 
 
 if __name__ == '__main__':
+    # Setting up the parser and adding headless mode argument
+    parser = argparse.ArgumentParser(description='Scrap.tf Raffle Bot')
+    parser.add_argument('--headless', action='store_true',
+                        help='Run in headless mode')
+    args = parser.parse_args()
+
     print(logo())
-    main()
+    main(headless=args.headless)
