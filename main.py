@@ -4,6 +4,8 @@ from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 import pickle
 import argparse
+import platform
+
 
 
 class Color:
@@ -179,7 +181,7 @@ def main(headless=False):
 
     # Initialization and setup
     url = 'https://scrap.tf'
-    driver = Driver(uc=True, headless=headless)
+    driver = Driver(uc=True, headed=True) if platform.system() == 'Linux' else Driver(uc=True)
     driver.get(url)
 
     # Injecting cookies for login
