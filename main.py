@@ -202,22 +202,24 @@ def main(headless=False, monitor=False):
     raffles_links = collect_raffle_links(driver)
 
     # Entering raffles
-    while True:
-        print(
-            f'> Open Raffles Found: {len(raffles_links)}\n')
-        for link in raffles_links:
-            enter_raffle(driver, link)
+    if raffles_links:
+        while True:
+            print(
+                f'> Open Raffles Found: {len(raffles_links)}\n')
+            for link in raffles_links:
+                enter_raffle(driver, link)
 
-        # Checking for new raffles
-        print(f'{Color.GREEN}[+] Searching for new raffles...{Color.RESET}')
-        new_raffles_links = collect_raffle_links(driver)
+            # Checking for new raffles
+            print(
+                f'{Color.GREEN}[+] Searching for new raffles...{Color.RESET}')
+            new_raffles_links = collect_raffle_links(driver)
 
-        # If new raffles are found, continue entering them
-        if new_raffles_links:
-            print('> New raffles were found!')
-            raffles_links = new_raffles_links
-            continue
-        break
+            # If new raffles are found, continue entering them
+            if new_raffles_links:
+                print('> New raffles were found!')
+                raffles_links = new_raffles_links
+                continue
+            break
 
     # Displaying raffle statistics
     raffles_stats = driver.find_element(
