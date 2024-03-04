@@ -23,7 +23,6 @@ parse-type==0.6.2
 pdbp==1.5.0
 platformdirs==4.2.0
 pluggy==1.4.0
-py==1.11.0
 Pygments==2.17.2
 pynose==1.5.0
 pyotp==2.9.0
