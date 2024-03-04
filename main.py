@@ -7,7 +7,6 @@ import argparse
 import platform
 
 
-
 class Color:
     GREEN = '\033[92m'
     RED = '\033[91m'
@@ -173,7 +172,7 @@ def check_cookie_injection(driver):
         return False
 
 
-def main(headless=False):
+def main(headless=False, monitor=False):
     """
     The main function automates the process of logging in, collecting and entering
     raffles on a website using Selenium WebDriver in Python.
@@ -181,7 +180,8 @@ def main(headless=False):
 
     # Initialization and setup
     url = 'https://scrap.tf'
-    driver = Driver(uc=True, headed=True) if platform.system() == 'Linux' else Driver(uc=True)
+    driver = Driver(uc=True, headed=True) if platform.system(
+    ) == 'Linux' else Driver(uc=True)
     driver.get(url)
 
     # Injecting cookies for login
@@ -190,7 +190,6 @@ def main(headless=False):
     while True:
         if inject_cookies(driver, cookies):
             print('> Successfully logged in!\n')
-
             break
         else:
             print('> Login unsuccessful, retrying...')
@@ -226,6 +225,16 @@ def main(headless=False):
     print(f'{Color.GREEN}[+] Successfully entered all raffles!{Color.RESET}')
     print(f'> Open Raffles Entered: {raffles_stats}\n')
 
+    # Monitoring for new raffles
+    if monitor:
+        print(f'{Color.GREEN}[+] Monitoring for new raffles...\n{Color.RESET}')
+        while True:
+            raffles_links = collect_raffle_links(driver)
+            if raffles_links:
+                for link in raffles_links:
+                    enter_raffle(driver, link)
+            driver.sleep(5)
+
     # Quitting the driver
     driver.quit()
 
@@ -235,7 +244,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Scrap.tf Raffle Bot')
     parser.add_argument('--headless', action='store_true',
                         help='Run in headless mode')
+    parser.add_argument('--monitor', action='store_true',
+                        help='constantly monitor for new raffles')
     args = parser.parse_args()
 
     print(logo())
-    main(headless=args.headless)
+    main(headless=args.headless, monitor=args.monitor)
