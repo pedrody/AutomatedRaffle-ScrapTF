@@ -13,25 +13,6 @@ class Color:
     RESET = '\033[m'
 
 
-def logo():
-    logo = """
-@@@@@@@   @@@@@@@@  @@@@@@@   @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@  
-@@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@  
-@@!  @@@  @@!       @@!  @@@  @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@  
-!@!  @!@  !@!       !@!  @!@  !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!  
-@!@@!@!   @!!!:!    @!@  !@!  @!@!!@!   @!@  !@!  @!@  !@!   !@!@!   
-!!@!!!    !!!!!:    !@!  !!!  !!@!@!    !@!  !!!  !@!  !!!    @!!!   
-!!:       !!:       !!:  !!!  !!: :!!   !!:  !!!  !!:  !!!    !!:    
-:!:       :!:       :!:  !:!  :!:  !:!  :!:  !:!  :!:  !:!    :!:    
-::        :: ::::   :::: ::  ::   :::  ::::: ::   :::: ::     ::    
-:        : :: ::   :: :  :    :   : :   : :  :   :: :  :      : 
-
-                    github.com/pedrody
-
-"""
-    return logo
-
-
 def scroll_to_bottom(driver):
     """
     The function `scroll_to_bottom` scrolls the webpage to the bottom using
@@ -185,7 +166,7 @@ def main(headless=False, monitor=False):
     driver.get(url)
 
     # Injecting cookies for login
-    print(f'{Color.GREEN}[+] Injecting cookies for login...{Color.RESET}')
+    print(f'\n{Color.GREEN}[+] Injecting cookies for login...{Color.RESET}')
     cookies = pickle.load(open('cookies.pkl', 'rb'))
     while True:
         if inject_cookies(driver, cookies):
@@ -250,5 +231,4 @@ if __name__ == '__main__':
                         help='constantly monitor for new raffles')
     args = parser.parse_args()
 
-    print(logo())
     main(headless=args.headless, monitor=args.monitor)
