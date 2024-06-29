@@ -18,8 +18,7 @@ instruction_msg = """
 
 
 def main():
-    driver = Driver(
-        uc=True, headed=True) if platform.system() == 'Linux' else Driver(uc=True)
+    driver = Driver(uc=True, headed=True)
     driver.get('https://scrap.tf/login')
 
     while True:
