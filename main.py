@@ -18,25 +18,24 @@ def scroll_to_bottom(driver):
 
 
 def collect_raffle_links(driver):
-    raffles_links = []
-
     driver.get('https://scrap.tf/raffles')
 
     while True:
         scroll_to_bottom(driver)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        if "That's all, no more!" in soup.get_text():
-            scroll_to_bottom(driver)
+        if "That's all, no more!" in BeautifulSoup(driver.page_source,
+                                                   'html.parser').get_text():
             break
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     raffles_div = soup.find('div', id='raffles-list')
+    raffles_links = set()
     if raffles_div:
         raffles = raffles_div.find_all('div', class_='panel-raffle')
         for raffle in raffles:
-            if not raffle.has_attr('class') or 'raffle-entered' not in raffle['class']:
+            if not raffle.has_attr('class') or 'raffle-entered' not in raffle[
+                    'class']:
                 raffle_link = raffle.find('a')['href']
-                raffles_links.append('https://scrap.tf' + raffle_link)
+                raffles_links.add('https://scrap.tf' + raffle_link)
 
     return raffles_links
 
@@ -62,7 +61,6 @@ def enter_raffle(driver, link):
     print(f'> Link: {link}')
 
     print(f'> Going to next...\n')
-    print('-\n')
     driver.sleep(5)
 
 
@@ -89,12 +87,10 @@ def check_cookie_injection(driver):
 
 
 def main(headless=False, monitor=False):
-    # Initialization and setup
     url = 'https://scrap.tf'
     driver = Driver(uc=True, headed=True)
     driver.get(url)
 
-    # Injecting cookies for login
     print(f'\n{Color.GREEN}[+] Injecting cookies for login...{Color.RESET}')
     cookies = pickle.load(open('cookies.pkl', 'rb'))
     while True:
@@ -106,12 +102,11 @@ def main(headless=False, monitor=False):
             driver.sleep(10)
             driver.refresh()
 
-    # Collecting raffle links
     print(
-        f'{Color.GREEN}[+] Collecting all currently active raffles...{Color.RESET}')
+        f'{Color.GREEN}[+] Collecting all currently active raffles...{Color.RESET}'
+    )
     raffles_links = collect_raffle_links(driver)
 
-    # Entering raffles
     if raffles_links:
         while True:
             print(
@@ -119,25 +114,21 @@ def main(headless=False, monitor=False):
             for link in raffles_links:
                 enter_raffle(driver, link)
 
-            # Checking for new raffles
             print(
                 f'{Color.GREEN}[+] Searching for new raffles...{Color.RESET}')
             new_raffles_links = collect_raffle_links(driver)
 
-            # If new raffles are found, continue entering them
             if new_raffles_links:
                 print('> New raffles were found!')
                 raffles_links = new_raffles_links
                 continue
             break
 
-    # Displaying raffle statistics
     raffles_stats = driver.find_element(
         By.CSS_SELECTOR, '.raffle-list-stat h1').text
     print(f'{Color.GREEN}[+] Successfully entered all raffles!{Color.RESET}')
     print(f'> Open Raffles Entered: {raffles_stats}\n')
 
-    # Monitoring for new raffles
     if monitor:
         print(f'{Color.GREEN}[+] Monitoring for new raffles...\n{Color.RESET}')
         while True:
@@ -147,12 +138,10 @@ def main(headless=False, monitor=False):
                     enter_raffle(driver, link)
             driver.sleep(5)
 
-    # Quitting the driver
     driver.quit()
 
 
 if __name__ == '__main__':
-    # Setting up the parser and adding headless mode argument
     parser = argparse.ArgumentParser(description='Scrap.tf Raffle Bot')
     parser.add_argument('--headless', action='store_true',
                         help='Run in headless mode')

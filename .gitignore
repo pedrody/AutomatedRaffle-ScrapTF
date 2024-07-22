@@ -1,6 +1,7 @@
 # Local
 cookies.pkl
 downloaded_files/
+auto-exec.bat
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
