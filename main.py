@@ -14,17 +14,13 @@ class Color:
 
 def scroll_to_bottom(driver):
     driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-    driver.sleep(2)
 
 
 def collect_raffle_links(driver):
     driver.get('https://scrap.tf/raffles')
 
-    while True:
+    while not driver.is_element_visible('.raffle-pagination-done'):
         scroll_to_bottom(driver)
-        if "That's all, no more!" in BeautifulSoup(driver.page_source,
-                                                   'html.parser').get_text():
-            break
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     raffles_div = soup.find('div', id='raffles-list')
@@ -61,7 +57,7 @@ def enter_raffle(driver, link):
     print(f'> Link: {link}')
 
     print(f'> Going to next...\n')
-    driver.sleep(5)
+    driver.sleep(3)
 
 
 def inject_cookies(driver, cookies):
@@ -136,7 +132,7 @@ def main(headless=False, monitor=False):
             if raffles_links:
                 for link in raffles_links:
                     enter_raffle(driver, link)
-            driver.sleep(5)
+            driver.sleep(60)
 
     driver.quit()
 
