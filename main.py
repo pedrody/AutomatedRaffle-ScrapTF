@@ -1,6 +1,5 @@
 from seleniumbase import Driver
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 import pickle
 import argparse
@@ -74,15 +73,12 @@ def inject_cookies(driver, cookies):
 
 
 def check_cookie_injection(driver):
-    try:
-        avatar_container = driver.find_element(
-            By.CSS_SELECTOR, '.avatar-container')
+    if driver.is_element_visible('.avatar-container'):
         return True
-    except NoSuchElementException:
-        return False
+    return False
 
 
-def main(headless=False, monitor=False):
+def main(monitor=False):
     url = 'https://scrap.tf'
     driver = Driver(uc=True, headed=True)
     driver.get(url)
@@ -145,4 +141,4 @@ if __name__ == '__main__':
                         help='constantly monitor for new raffles')
     args = parser.parse_args()
 
-    main(headless=args.headless, monitor=args.monitor)
+    main(monitor=args.monitor)
