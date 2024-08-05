@@ -73,9 +73,14 @@ def inject_cookies(driver, cookies):
 
 
 def check_cookie_injection(driver):
-    if driver.is_element_visible('.avatar-container'):
-        return True
-    return False
+    if driver.is_element_visible(
+        # CSS path of the login button
+        'html body#pid-index.page-theme-light nav.navbar.yamm.navbar-default.'
+        'navbar-fixed-top.navbar-main div.container div#navbar-main.collapse.'
+        'navbar-collapse ul.nav.navbar-nav.navbar-right li a img.sits-login'
+    ):
+        return False
+    return True
 
 
 def main(monitor=False):
